@@ -4,8 +4,7 @@
 namespace hugo
 {
 
-// SerialLogger is a singleton
-SerialLogger SerialLogger::instance = SerialLogger();
+SerialLogger SerialLogger::instance;
 
 SerialLogger::SerialLogger()
 {
