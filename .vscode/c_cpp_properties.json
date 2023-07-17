@@ -10,7 +10,7 @@
             "includePath": [
                 "/home/david/repos/personal/Hugo/include",
                 "/home/david/repos/personal/Hugo/src",
-                "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Servo/src",
+                "/home/david/repos/personal/Hugo/lib/serialLogger",
                 "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/Adafruit PWM Servo Driver Library",
                 "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Wire",
                 "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/Adafruit TinyUSB Library/src",
@@ -39,6 +39,7 @@
                 "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/Adafruit NeoPixel",
                 "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/Adafruit SPIFlash/src",
                 "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/MIDI Library/src",
+                "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/Unity/src",
                 "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Adafruit_LittleFS/src",
                 "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Adafruit_TinyUSB_Arduino/src",
                 "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Adafruit_nRFCrypto/src",
@@ -48,6 +49,7 @@
                 "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/InternalFileSytem/src",
                 "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/PDM/src",
                 "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/RotaryEncoder",
+                "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Servo/src",
                 "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/SoftwareSerial",
                 ""
             ],
@@ -56,7 +58,7 @@
                 "path": [
                     "/home/david/repos/personal/Hugo/include",
                     "/home/david/repos/personal/Hugo/src",
-                    "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Servo/src",
+                    "/home/david/repos/personal/Hugo/lib/serialLogger",
                     "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/Adafruit PWM Servo Driver Library",
                     "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Wire",
                     "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/Adafruit TinyUSB Library/src",
@@ -85,6 +87,7 @@
                     "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/Adafruit NeoPixel",
                     "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/Adafruit SPIFlash/src",
                     "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/MIDI Library/src",
+                    "/home/david/repos/personal/Hugo/.pio/libdeps/adafruit_feather_nrf52832/Unity/src",
                     "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Adafruit_LittleFS/src",
                     "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Adafruit_TinyUSB_Arduino/src",
                     "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Adafruit_nRFCrypto/src",
@@ -94,6 +97,7 @@
                     "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/InternalFileSytem/src",
                     "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/PDM/src",
                     "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/RotaryEncoder",
+                    "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/Servo/src",
                     "/home/david/.platformio/packages/framework-arduinoadafruitnrf52/libraries/SoftwareSerial",
                     ""
                 ]

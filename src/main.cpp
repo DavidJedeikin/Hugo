@@ -1,58 +1,29 @@
+#include "serialLogger.hpp"
 #include <Arduino.h>
-#include <Servo.h>
+
+// #include <Servo.h>
 #include <Wire.h>
-
-int adcin = A0;
-int adcvalue = 0;
-float mv_per_lsb = 3300.0F / 1024.0F; // 10-bit ADC with 3.6V input range
-
-Servo myservo; // create servo object to control a servo
+#include <string>
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  myservo.attach(A4); // attaches the servo on pin 9 to the servo object
-
-  static constexpr uint32_t baudrate = 115200;
-  Serial.begin(baudrate);
-  while (!Serial)
-    delay(10); // for nrf52840 with native usb
-
-  Serial.println("Serial Echo demo");
-  Serial.print("Badurate : ");
-  Serial.println(baudrate);
+  Serial.begin(115200);
 }
 
 void loop()
 {
-  Serial.println("Test print");
-  adcvalue = analogRead(adcin);
-  float voltage = static_cast<float>(adcvalue * mv_per_lsb);
-
-  // Display the results
-  Serial.print(" [");
-  // Serial.print((float)adcvalue * mv_per_lsb);
-  Serial.print(voltage);
-  Serial.println(" mV]");
-
-  float val =
-      map(voltage,
-          0,
-          1700,
-          0,
-          180); // scale it to use it with the servo (value between 0 and
-  Serial.print("Writing Val: ");
-  Serial.println(val);
-  // myservo.write(val); // sets the servo position according to the
-  // scaled value
-
-  if (voltage < 900)
+  int i = 0;
+  float height = 5.7F;
+  std::string name = "David";
+  while (true)
   {
-    digitalWrite(LED_BUILTIN, HIGH);
+    hugo::SerialLogger::getInstance().log("TestPrint");
+    // hugo::SerialLogger logger;
+    // logger.log("TestLog");
+
+    height += 0.1;
+    Serial.printf(
+        "A: %d, Height: %.2f, Name: %s \n\r", i++, height, name.c_str());
+    delay(100);
   }
-  else
-  {
-    digitalWrite(LED_BUILTIN, LOW);
-  }
-  delay(100); // wait for a second
 }
