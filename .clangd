@@ -1,0 +1,30 @@
+# We're currently using this file to disable checking of certain diagnostic
+# rules in clangd ONLY (i.e. exclusively in your IDE).
+#
+# However, these rules are NOT, and SHOULD NOT BE, disabled for clang-tidy via
+# the .clang-tidy file (i.e. for linting in the CI pipeline)
+#
+# The reason for this is that at the time of writing, clangd does not
+# properly ignore warnings from macros defined in system headers (i.e.
+# third party code that we have no control over such as gtest or MPLAB plibs)
+# Therefore, we disable these warnings in the IDE to avoid having to silence
+# them manually via the use of NONLINT directives.
+#
+# Any violation of these rules by our own code will still be caught in the CI
+# pipeline.
+
+---
+# Handle GTest/GMock Macros
+If:
+  PathMatch: [.*\.test.cpp, test/.*]
+Diagnostics:
+  ClangTidy:
+    Remove: [cppcoreguidelines-avoid-non-const-global-variables, cppcoreguidelines-owning-memory,cppcoreguidelines-avoid-goto, readability-redundant-string-init]
+
+---
+# Handle MPLAB Macros
+If:
+  PathMatch: [.*samE5x.*\.cpp, .*peripheralFactory\.cpp, .*main\.cpp, .*bootstrapper\.cpp]
+Diagnostics:
+  ClangTidy:
+    Remove: [bugprone-implicit-widening-of-multiplication-result, cppcoreguidelines-pro-type-cstyle-cast]
