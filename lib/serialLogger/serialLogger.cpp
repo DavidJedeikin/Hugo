@@ -3,13 +3,12 @@
 
 namespace hugo
 {
-
-SerialLogger SerialLogger::instance;
-
-SerialLogger::SerialLogger()
+void SerialLogger::init()
 {
   Serial.begin(115200);
 }
+
+SerialLogger SerialLogger::instance;
 
 void SerialLogger::log(std::string&& message)
 {

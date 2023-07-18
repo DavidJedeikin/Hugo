@@ -7,6 +7,7 @@ namespace hugo
 class SerialLogger
 {
  public:
+  void init();
   void log(std::string&& message);
   static SerialLogger& getInstance();
 
@@ -16,7 +17,7 @@ class SerialLogger
   void operator=(SerialLogger&&) = delete;
 
  private:
-  SerialLogger();
+  SerialLogger() = default;
   static SerialLogger instance;
 };
 

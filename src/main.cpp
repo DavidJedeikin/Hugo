@@ -7,7 +7,7 @@
 
 void setup()
 {
-  // Serial.begin(115200);
+  hugo::SerialLogger::getInstance().init();
 }
 
 void loop()
