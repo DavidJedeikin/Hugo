@@ -32,10 +32,14 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 // for max range. You'll have to tweak them as necessary to match the servos you
 // have!
 
-#define DELAY 5
+#define DELAY 20
 
-#define SERVOMIN 70  // This is the 'minimum' pulse length count (out of 4096)
-#define SERVOMAX 450 // This is the 'maximum' pulse length count (out of 4096)
+
+// #define SERVOMIN 55  // This is the 'minimum' pulse length count (out of 4096)
+// #define SERVOMAX 520 // This is the 'maximum' pulse length count (out of 4096)
+#define SERVOMIN 350  // This is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX 420 // This is the 'maximum' pulse length count (out of 4096)
+
 #define USMIN                                                                  \
   600 // This is the rounded 'minimum' microsecond length based on the minimum
       // pulse of 150
@@ -69,7 +73,8 @@ void setup()
    * Failure to correctly set the int.osc value will cause unexpected PWM
    * results
    */
-  pwm.setOscillatorFrequency(27000000);
+  pwm.setOscillatorFrequency(25000000);
+  // pwm.setOscillatorFrequency(27000000);
   pwm.setPWMFreq(SERVO_FREQ); // Analog servos run at ~50 Hz updates
 
   delay(10);
@@ -102,7 +107,9 @@ void loop()
   for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++)
   {
     Serial.println(pulselen);
-    pwm.setPWM(servonum, 0, pulselen);
+    pwm.setPWM(0, 0, pulselen);
+    pwm.setPWM(1, 0, pulselen);
+    pwm.setPWM(2, 0, pulselen);
     delay(DELAY);
   }
 
@@ -110,7 +117,9 @@ void loop()
   for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen--)
   {
     Serial.println(pulselen);
-    pwm.setPWM(servonum, 0, pulselen);
+    pwm.setPWM(0, 0, pulselen);
+    pwm.setPWM(1, 0, pulselen);
+    pwm.setPWM(2, 0, pulselen);
     delay(DELAY);
   }
 
