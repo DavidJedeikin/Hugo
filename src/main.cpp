@@ -14,14 +14,14 @@ void loop()
   //////////////////////////////////////////////////////////////////////
   hugo::SerialLogger::getInstance().init();
 
-  int middleEchoPin{31};
-  int middleTriggerPin{30};
+  int rightEchoPin{15};
+  int rightTriggerPin{7};
 
-  int rightEchoPin{A5};
-  int rightTriggerPin{A4};
+  int middleEchoPin{30};
+  int middleTriggerPin{27};
 
   int leftEchoPin{11};
-  int leftTriggerPin{7};
+  int leftTriggerPin{31};
 
   pinMode(rightTriggerPin, OUTPUT);
   pinMode(middleTriggerPin, OUTPUT);
