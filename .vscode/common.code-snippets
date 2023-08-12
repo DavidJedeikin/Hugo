@@ -1,0 +1,17 @@
+{
+  "Big Comment": {
+    "scope": "cpp",
+    "prefix": [
+      "cc",
+      "big comment",
+      "bc"
+    ],
+    "description": "Add a visually distinctive large comment block",
+    "body": [
+      " ",
+      "//////////////////////////////////////////////////////////////////////",
+      "// ${1:Type here}",
+      "//////////////////////////////////////////////////////////////////////",
+    ]
+  }
+}
