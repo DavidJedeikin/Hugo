@@ -1,7 +1,26 @@
 #include "log.hpp"
 #include <Adafruit_TinyUSB.h> // for Serial
 #include <Arduino.h>
+#include <Servo.h>
 #include <Wire.h>
+
+class LinearMap
+{
+ public:
+  LinearMap(float xMin, float xMax, float yMin, float yMax)
+  {
+    this->m = (yMax - yMin) / (xMax - xMin);
+  }
+
+  float getY(float x)
+  {
+    return this->m * x + this->c;
+  }
+
+ private:
+  float m;
+  float c;
+};
 
 void setup()
 {
@@ -14,29 +33,30 @@ void loop()
   //////////////////////////////////////////////////////////////////////
   hugo::SerialLogger::getInstance().init();
 
+  // Servo
+  int potPin{A5};
+  LinearMap potToServoAngleMap(0, 942, 0, 180);
+  Servo baseServo;
+  baseServo.attach(A4);
+
+  // Sonar
   int rightEchoPin{15};
   int rightTriggerPin{7};
-
-  int middleEchoPin{30};
-  int middleTriggerPin{27};
-
   int leftEchoPin{11};
   int leftTriggerPin{31};
-
   pinMode(rightTriggerPin, OUTPUT);
-  pinMode(middleTriggerPin, OUTPUT);
   pinMode(leftTriggerPin, OUTPUT);
-
   pinMode(rightEchoPin, INPUT);
-  pinMode(middleEchoPin, INPUT);
   pinMode(leftEchoPin, INPUT);
 
   //////////////////////////////////////////////////////////////////////
   // Main Loop
   //////////////////////////////////////////////////////////////////////
 
+  uint32_t potValue{0}; // 0 -> 942
+
+  float difference{0};
   float distanceCmRight{0};
-  float distanceCmMiddle{0};
   float distanceCmLeft{0};
 
   static constexpr float METERS_TO_CM{100.0F};
@@ -55,29 +75,29 @@ void loop()
 
     delay(50);
 
-    // Middle
-    digitalWrite(middleTriggerPin, LOW);
-    delayMicroseconds(2); // Just to make sure you start high
-    digitalWrite(middleTriggerPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(middleTriggerPin, LOW);
-    distanceCmMiddle = (pulseIn(middleEchoPin, HIGH) / 2.0F) *
-                       MICROSECONDS_TO_SECONDS * SPEED_OF_SOUND * METERS_TO_CM;
-
     // Left
     digitalWrite(leftTriggerPin, LOW);
     delayMicroseconds(2); // Just to make sure you start high
     digitalWrite(leftTriggerPin, HIGH);
     delayMicroseconds(10);
     digitalWrite(leftTriggerPin, LOW);
+
     distanceCmLeft = (pulseIn(leftEchoPin, HIGH) / 2.0F) *
                      MICROSECONDS_TO_SECONDS * SPEED_OF_SOUND * METERS_TO_CM;
 
     delay(50);
 
-    LOG_RAW("Right: %.0f, Middle: %.0f, Left: %.0f",
+    difference = distanceCmLeft - distanceCmRight;
+    LOG_RAW("Right: %.0f, Left: %.0f, Difference: %.2f",
             distanceCmRight,
-            distanceCmMiddle,
-            distanceCmLeft);
+            distanceCmLeft,
+            difference);
+
+    // Servo
+
+    potValue = analogRead(potPin);
+    float servoWriteVal = potToServoAngleMap.getY(potValue);
+    baseServo.write(servoWriteVal);
+    LOG_RAW("POT Val: %u, Servo Angle: %.2f", potValue, servoWriteVal);
   }
 }
