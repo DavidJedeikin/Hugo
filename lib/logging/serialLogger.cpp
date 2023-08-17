@@ -12,7 +12,7 @@ SerialLogger SerialLogger::instance;
 
 void SerialLogger::log(std::string&& message)
 {
-  Serial.printf("%s\n\r", message.c_str());
+  Serial.printf("%s\r\n", message.c_str());
 }
 
 SerialLogger& SerialLogger::getInstance()
