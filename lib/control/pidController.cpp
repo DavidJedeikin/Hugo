@@ -3,9 +3,6 @@
 #include "log.hpp"
 #include <algorithm>
 
-namespace core
-{
-
 PidController::PidController(Parameters params)
     : params(params),
       timestepSeconds(static_cast<float>(params.timestepMs) / 1000.0F)
@@ -47,16 +44,30 @@ float PidController::getControlSignal(float currentState, float setpoint)
   this->errorIntegral += (currentError * this->timestepSeconds);
 
   // Add integral windup mechanism
-  this->errorIntegral = std::clamp<float>(
-      this->errorIntegral,
-      this->params.windupLimitFactor * params.minControlSignal / params.Ki,
-      this->params.windupLimitFactor * params.maxControlSignal / params.Ki);
+  this->errorIntegral =
+      std::clamp<float>(this->errorIntegral,
+                        this->params.windupLimitFactor *
+                            this->params.minControlSignal / this->params.Ki,
+                        this->params.windupLimitFactor *
+                            this->params.maxControlSignal / this->params.Ki);
 
-  float controlSignal = (params.Kp * currentError) +
-                        (params.Kd * errorDerivative) +
-                        (params.Ki * this->errorIntegral);
+  float controlSignal = (this->params.Kp * currentError) +
+                        (this->params.Kd * errorDerivative) +
+                        (this->params.Ki * this->errorIntegral);
 
   this->previousError = currentError;
+
+  LOG_RAW("CurrentState: %.2f, Setpoint: %.2f, CurrentError: %.2f, "
+          "ControlSignal: %.2f, Kp: %.2f, ExpectedControlSignal: %.2f, "
+          "ErrorIntegral: %.2f",
+          currentState,
+          setpoint,
+          currentError,
+          controlSignal,
+          this->params.Kp,
+          this->params.Kp * currentError + this->params.Kd * errorDerivative +
+              this->params.Ki * this->errorIntegral,
+          this->errorIntegral);
 
   // Clamp the output
   return std::clamp<float>(
@@ -66,7 +77,7 @@ float PidController::getControlSignal(float currentState, float setpoint)
 std::string PidController::Parameters::toString() const
 {
   return format(
-      "PID Control Parameters \n Kp: %.2f, Kd: %.2f, Ki: %.2f, dtMs: %.2f, "
+      "PID Control Parameters \n Kp: %.2f, Kd: %.2f, Ki: %.2f, dtMs: %u, "
       "Min: %.2f, Max: %.2f, Windup Factor:  %.2f",
       this->Kp,
       this->Kd,
@@ -76,5 +87,3 @@ std::string PidController::Parameters::toString() const
       this->maxControlSignal,
       this->windupLimitFactor);
 }
-
-} // namespace core

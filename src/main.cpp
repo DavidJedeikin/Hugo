@@ -1,4 +1,5 @@
 #include "log.hpp"
+#include "pidController.hpp"
 #include <Adafruit_TinyUSB.h> // for Serial
 #include <Arduino.h>
 #include <Servo.h>
@@ -70,15 +71,21 @@ void loop()
   hugo::SerialLogger::getInstance().init();
 
   // Servo control
-  int potPin{A5};
+  static constexpr float SERVO_MIN{90};
+  static constexpr float SERVO_MAX{200};
 
   float servoAngle{135};
-  float controlSignal{0};
-  float proportionalGain{0};
-
   Servo baseServo;
-
   baseServo.attach(A4);
+
+  PidController::Parameters params{.Kp = 0.4F,
+                                   .Kd = 0.0F,
+                                   .Ki = 0.0F,
+                                   .timestepMs = 60,
+                                   .maxControlSignal = SERVO_MAX,
+                                   .minControlSignal = -SERVO_MAX};
+
+  PidController pidController(params);
 
   // Sonar
   int rightEchoPin{15};
@@ -86,11 +93,11 @@ void loop()
   int leftEchoPin{11};
   int leftTriggerPin{31};
 
-  float difference{0};
   float rightDistance{0};
   float leftDistance{0};
-  LinearFirstOrderFiler leftFilter(0.1);
-  LinearFirstOrderFiler rightFilter(0.1);
+
+  LinearFirstOrderFiler leftFilter(0.05);
+  LinearFirstOrderFiler rightFilter(0.05);
 
   pinMode(rightTriggerPin, OUTPUT);
   pinMode(leftTriggerPin, OUTPUT);
@@ -106,28 +113,31 @@ void loop()
 
     rightDistance = getDistance(rightTriggerPin, rightEchoPin);
     float rightFiltered = rightFilter.getVal(rightDistance);
-    delay(50);
+    delay(30);
 
     leftDistance = getDistance(leftTriggerPin, leftEchoPin);
     float leftFiltered = leftFilter.getVal(leftDistance);
 
-    delay(50);
+    delay(30);
 
-    difference = leftDistance - rightDistance;
-    float differenceFiltered = leftFiltered - rightFiltered;
+    float differenceFiltered = rightFiltered - leftFiltered;
 
-    LOG_RAW(">LeftRaw:%.2f", leftDistance);
-    LOG_RAW(">RightRaw:%.2f\r\n", rightDistance);
-    LOG_RAW(">DifferenceRaw:%.2f\r\n", difference);
+    if (differenceFiltered < 15 && differenceFiltered > -15)
+    {
+      differenceFiltered = 0;
+    }
 
-    LOG_RAW(">LeftFiltered:%.2f", leftFiltered);
-    LOG_RAW(">RightFiltered:%.2f\r\n", rightFiltered);
-    LOG_RAW(">DifferenceFiltered:%.2f\r\n", differenceFiltered);
+    float controlSignal =
+        pidController.getControlSignal(differenceFiltered, 0.0);
 
-    // Control Loop
-    // proportionalGain = static_cast<float>(analogRead(potPin)) * 0.01;
-    // controlSignal = proportionalGain * difference;
-    // servoAngle = std::clamp(servoAngle + controlSignal, 90.0F, 180.0F);
-    // baseServo.write(servoAngle);
+    servoAngle = std::clamp(servoAngle + controlSignal, SERVO_MIN, SERVO_MAX);
+    baseServo.write(servoAngle);
+
+    LOG_RAW(">DifferenceFiltered:%.2f", differenceFiltered);
+    LOG_RAW(">ControlSignal:%.2f", controlSignal);
+    // LOG_RAW("Difference: %.2f, ControlSignal: %.2f, ServoAngle: %.2f",
+    //         differenceFiltered,
+    //         controlSignal,
+    //         servoAngle);
   }
 }

@@ -3,9 +3,6 @@
 #include <cstdint>
 #include <string>
 
-namespace core
-{
-
 class PidController
 {
  public:
@@ -31,9 +28,8 @@ class PidController
 
  private:
   Parameters params;
-  float timestepSeconds{0};
+  float timestepSeconds{0.0F};
 
-  float errorIntegral{0};
-  float previousError{0};
+  float errorIntegral{0.0F};
+  float previousError{0.0F};
 };
-} // namespace core
