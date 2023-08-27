@@ -88,21 +88,30 @@ void loop()
   PidController pidController(params);
 
   // Sonar
-  int rightEchoPin{15};
-  int rightTriggerPin{7};
+  int rightEchoPin{A1};
+  int rightTriggerPin{A0};
+
   int leftEchoPin{11};
   int leftTriggerPin{31};
 
   float rightDistance{0};
   float leftDistance{0};
 
-  LinearFirstOrderFiler leftFilter(0.05);
-  LinearFirstOrderFiler rightFilter(0.05);
+  LinearFirstOrderFiler leftFilter(0.5);
+  LinearFirstOrderFiler rightFilter(0.5);
 
   pinMode(rightTriggerPin, OUTPUT);
   pinMode(leftTriggerPin, OUTPUT);
   pinMode(rightEchoPin, INPUT);
   pinMode(leftEchoPin, INPUT);
+
+  // Eyes
+  int redEyes{A0};
+  int greenEyes{A1};
+  int blueEyes{A2};
+  pinMode(redEyes, OUTPUT);
+  pinMode(greenEyes, OUTPUT);
+  pinMode(blueEyes, OUTPUT);
 
   //////////////////////////////////////////////////////////////////////
   // Main Loop
@@ -111,33 +120,60 @@ void loop()
   while (true)
   {
 
-    rightDistance = getDistance(rightTriggerPin, rightEchoPin);
-    float rightFiltered = rightFilter.getVal(rightDistance);
-    delay(30);
+    // rightDistance = getDistance(rightTriggerPin, rightEchoPin);
+    // float rightFiltered = rightFilter.getVal(rightDistance);
+    // delay(30);
 
-    leftDistance = getDistance(leftTriggerPin, leftEchoPin);
-    float leftFiltered = leftFilter.getVal(leftDistance);
+    // leftDistance = getDistance(leftTriggerPin, leftEchoPin);
+    // float leftFiltered = leftFilter.getVal(leftDistance);
 
-    delay(30);
+    // delay(30);
 
-    float differenceFiltered = rightFiltered - leftFiltered;
+    // float differenceFiltered = rightFiltered - leftFiltered;
 
-    if (differenceFiltered < 15 && differenceFiltered > -15)
-    {
-      differenceFiltered = 0;
-    }
+    // if (differenceFiltered < 15 && differenceFiltered > -15)
+    // {
+    //   differenceFiltered = 0;
+    // }
 
-    float controlSignal =
-        pidController.getControlSignal(differenceFiltered, 0.0);
+    // float controlSignal =
+    //     pidController.getControlSignal(differenceFiltered, 0.0);
 
-    servoAngle = std::clamp(servoAngle + controlSignal, SERVO_MIN, SERVO_MAX);
-    baseServo.write(servoAngle);
+    // servoAngle = std::clamp(servoAngle + controlSignal, SERVO_MIN,
+    // SERVO_MAX); baseServo.write(servoAngle);
 
-    LOG_RAW(">DifferenceFiltered:%.2f", differenceFiltered);
-    LOG_RAW(">ControlSignal:%.2f", controlSignal);
+    // LOG_RAW("RawRight: %.2f", rightDistance);
+    // LOG_RAW("FilteredRight: %.2f", rightFiltered);
+
+    // LOG_RAW(">DifferenceFiltered:%.2f", differenceFiltered);
+    // LOG_RAW(">ControlSignal:%.2f", controlSignal);
     // LOG_RAW("Difference: %.2f, ControlSignal: %.2f, ServoAngle: %.2f",
     //         differenceFiltered,
     //         controlSignal,
     //         servoAngle);
+
+    LOG_RAW("%s", "OFF");
+    digitalWrite(redEyes, HIGH);
+    digitalWrite(blueEyes, HIGH);
+    digitalWrite(greenEyes, HIGH);
+    delay(3000);
+
+    LOG_RAW("%s", "Red eyes");
+    digitalWrite(redEyes, LOW);
+    digitalWrite(blueEyes, HIGH);
+    digitalWrite(greenEyes, HIGH);
+    delay(3000);
+
+    LOG_RAW("%s", "Blue eyes");
+    digitalWrite(redEyes, HIGH);
+    digitalWrite(blueEyes, LOW);
+    digitalWrite(greenEyes, HIGH);
+    delay(3000);
+
+    LOG_RAW("%s", "Green eyes");
+    digitalWrite(redEyes, HIGH);
+    digitalWrite(blueEyes, HIGH);
+    digitalWrite(greenEyes, LOW);
+    delay(3000);
   }
 }

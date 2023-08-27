@@ -57,18 +57,6 @@ float PidController::getControlSignal(float currentState, float setpoint)
 
   this->previousError = currentError;
 
-  LOG_RAW("CurrentState: %.2f, Setpoint: %.2f, CurrentError: %.2f, "
-          "ControlSignal: %.2f, Kp: %.2f, ExpectedControlSignal: %.2f, "
-          "ErrorIntegral: %.2f",
-          currentState,
-          setpoint,
-          currentError,
-          controlSignal,
-          this->params.Kp,
-          this->params.Kp * currentError + this->params.Kd * errorDerivative +
-              this->params.Ki * this->errorIntegral,
-          this->errorIntegral);
-
   // Clamp the output
   return std::clamp<float>(
       controlSignal, params.minControlSignal, params.maxControlSignal);
