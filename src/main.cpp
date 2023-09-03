@@ -113,6 +113,10 @@ void loop()
   pinMode(greenEyes, OUTPUT);
   pinMode(blueEyes, OUTPUT);
 
+  // Mode input
+  int modeSelectGpioIn{A3};
+  pinMode(modeSelectGpioIn, INPUT_PULLDOWN);
+
   //////////////////////////////////////////////////////////////////////
   // Main Loop
   //////////////////////////////////////////////////////////////////////
@@ -152,28 +156,32 @@ void loop()
     //         controlSignal,
     //         servoAngle);
 
-    LOG_RAW("%s", "OFF");
-    digitalWrite(redEyes, HIGH);
-    digitalWrite(blueEyes, HIGH);
-    digitalWrite(greenEyes, HIGH);
-    delay(3000);
+    // LOG_RAW("%s", "OFF");
+    // digitalWrite(redEyes, HIGH);
+    // digitalWrite(blueEyes, HIGH);
+    // digitalWrite(greenEyes, HIGH);
+    // delay(3000);
 
-    LOG_RAW("%s", "Red eyes");
-    digitalWrite(redEyes, LOW);
-    digitalWrite(blueEyes, HIGH);
-    digitalWrite(greenEyes, HIGH);
-    delay(3000);
+    // LOG_RAW("%s", "Red eyes");
+    // digitalWrite(redEyes, LOW);
+    // digitalWrite(blueEyes, HIGH);
+    // digitalWrite(greenEyes, HIGH);
+    // delay(3000);
 
-    LOG_RAW("%s", "Blue eyes");
-    digitalWrite(redEyes, HIGH);
-    digitalWrite(blueEyes, LOW);
-    digitalWrite(greenEyes, HIGH);
-    delay(3000);
+    // LOG_RAW("%s", "Blue eyes");
+    // digitalWrite(redEyes, HIGH);
+    // digitalWrite(blueEyes, LOW);
+    // digitalWrite(greenEyes, HIGH);
+    // delay(3000);
 
-    LOG_RAW("%s", "Green eyes");
-    digitalWrite(redEyes, HIGH);
-    digitalWrite(blueEyes, HIGH);
-    digitalWrite(greenEyes, LOW);
-    delay(3000);
+    // LOG_RAW("%s", "Green eyes");
+    // digitalWrite(redEyes, HIGH);
+    // digitalWrite(blueEyes, HIGH);
+    // digitalWrite(greenEyes, LOW);
+    // delay(3000);
+
+    int val = digitalRead(modeSelectGpioIn);
+    LOG_RAW("Val: %d", val);
+    delay(0.1);
   }
 }
