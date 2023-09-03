@@ -107,7 +107,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60110",
+                "PLATFORMIO=60111",
                 "NRF52832_XXAA",
                 "NRF52",
                 "F_CPU=64000000L",
