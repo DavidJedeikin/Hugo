@@ -45,7 +45,7 @@ void loop()
 
   while (true)
   {
-    eyes.setColour(Eyes::Colour::red);
+    // eyes.setColour(Eyes::Colour::red);
     // LOG_RAW("Distance: %s", sonarArray.getDistance().toString());
 
     // float controlSignal =

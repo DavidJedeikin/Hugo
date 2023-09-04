@@ -8,7 +8,7 @@ class Eyes
  public:
   enum class Colour
   {
-    none,
+    off,
     red,
     green,
     blue,
@@ -20,12 +20,11 @@ class Eyes
   void setColour(Colour colour);
 
  private:
-  RGBLed eyes;
-
   int redPin{A0};
   int greenPin{A1};
   int bluePin{A2};
 
-  inline static std::array<int, 3> RGB_NO_COLOUR{0, 0, 0};
+  RGBLed eyes;
+
   inline static std::array<int, 3> RGB_LIGHT_BLUE{173, 216, 255};
 };

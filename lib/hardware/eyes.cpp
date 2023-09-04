@@ -20,8 +20,8 @@ void Eyes::setColour(Colour colour)
     case Colour::magenta:
       this->eyes.setColor(RGBLed::MAGENTA);
       break;
-    case Colour::none:
-      this->eyes.setColor(this->RGB_NO_COLOUR.data());
+    case Colour::off:
+      this->eyes.off();
       break;
     case Colour::light_blue:
       this->eyes.setColor(this->RGB_LIGHT_BLUE.data());
