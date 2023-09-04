@@ -1,6 +1,7 @@
 #include "eyes.hpp"
 #include "log.hpp"
 #include "pidController.hpp"
+#include "sonarArray.hpp"
 #include <Adafruit_TinyUSB.h> // for Serial
 #include <Arduino.h>
 #include <Servo.h>
@@ -89,28 +90,31 @@ void loop()
   PidController pidController(params);
 
   // Sonar
-  int rightEchoPin{7};
-  int rightTriggerPin{11};
+  // int rightEchoPin{7};
+  // int rightTriggerPin{11};
 
-  int leftEchoPin{11};
-  int leftTriggerPin{31};
+  // int leftEchoPin{11};
+  // int leftTriggerPin{31};
 
-  float rightDistance{0};
-  float leftDistance{0};
+  // float rightDistance{0};
+  // float leftDistance{0};
 
   LinearFirstOrderFiler leftFilter(0.5);
   LinearFirstOrderFiler rightFilter(0.5);
 
-  pinMode(rightTriggerPin, OUTPUT);
-  pinMode(leftTriggerPin, OUTPUT);
-  pinMode(rightEchoPin, INPUT);
-  pinMode(leftEchoPin, INPUT);
+  // pinMode(rightTriggerPin, OUTPUT);
+  // pinMode(leftTriggerPin, OUTPUT);
+  // pinMode(rightEchoPin, INPUT);
+  // pinMode(leftEchoPin, INPUT);
 
   // Mode input
   int modeSelectGpioIn{A3};
   pinMode(modeSelectGpioIn, INPUT_PULLDOWN);
 
   Eyes eyes;
+  eyes.setColour(Eyes::Colour::light_blue);
+
+  SonarArray sonarArray;
 
   //////////////////////////////////////////////////////////////////////
   // Main Loop
@@ -118,6 +122,8 @@ void loop()
 
   while (true)
   {
+
+    LOG_RAW("Distance: %s", sonarArray.getDistance().toString());
 
     // rightDistance = getDistance(rightTriggerPin, rightEchoPin);
     // LOG_RAW("RIGHT: %.2F", rightDistance);
@@ -152,10 +158,5 @@ void loop()
     //         differenceFiltered,
     //         controlSignal,
     //         servoAngle);
-
-    eyes.setColour(Eyes::Colour::light_blue);
-    delay(1000);
-    eyes.setColour(Eyes::Colour::magenta);
-    delay(1000);
   }
 }
