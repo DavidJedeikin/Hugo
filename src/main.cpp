@@ -1,3 +1,4 @@
+#include "eyes.hpp"
 #include "log.hpp"
 #include "pidController.hpp"
 #include <Adafruit_TinyUSB.h> // for Serial
@@ -68,7 +69,7 @@ void loop()
   //////////////////////////////////////////////////////////////////////
   // Initialisation
   //////////////////////////////////////////////////////////////////////
-  hugo::SerialLogger::getInstance().init();
+  SerialLogger::getInstance().init();
 
   // Servo control
   static constexpr float SERVO_MIN{90};
@@ -88,8 +89,8 @@ void loop()
   PidController pidController(params);
 
   // Sonar
-  int rightEchoPin{A1};
-  int rightTriggerPin{A0};
+  int rightEchoPin{7};
+  int rightTriggerPin{11};
 
   int leftEchoPin{11};
   int leftTriggerPin{31};
@@ -105,17 +106,11 @@ void loop()
   pinMode(rightEchoPin, INPUT);
   pinMode(leftEchoPin, INPUT);
 
-  // Eyes
-  int redEyes{A0};
-  int greenEyes{A1};
-  int blueEyes{A2};
-  pinMode(redEyes, OUTPUT);
-  pinMode(greenEyes, OUTPUT);
-  pinMode(blueEyes, OUTPUT);
-
   // Mode input
   int modeSelectGpioIn{A3};
   pinMode(modeSelectGpioIn, INPUT_PULLDOWN);
+
+  Eyes eyes;
 
   //////////////////////////////////////////////////////////////////////
   // Main Loop
@@ -125,6 +120,8 @@ void loop()
   {
 
     // rightDistance = getDistance(rightTriggerPin, rightEchoPin);
+    // LOG_RAW("RIGHT: %.2F", rightDistance);
+
     // float rightFiltered = rightFilter.getVal(rightDistance);
     // delay(30);
 
@@ -156,32 +153,9 @@ void loop()
     //         controlSignal,
     //         servoAngle);
 
-    // LOG_RAW("%s", "OFF");
-    // digitalWrite(redEyes, HIGH);
-    // digitalWrite(blueEyes, HIGH);
-    // digitalWrite(greenEyes, HIGH);
-    // delay(3000);
-
-    // LOG_RAW("%s", "Red eyes");
-    // digitalWrite(redEyes, LOW);
-    // digitalWrite(blueEyes, HIGH);
-    // digitalWrite(greenEyes, HIGH);
-    // delay(3000);
-
-    // LOG_RAW("%s", "Blue eyes");
-    // digitalWrite(redEyes, HIGH);
-    // digitalWrite(blueEyes, LOW);
-    // digitalWrite(greenEyes, HIGH);
-    // delay(3000);
-
-    // LOG_RAW("%s", "Green eyes");
-    // digitalWrite(redEyes, HIGH);
-    // digitalWrite(blueEyes, HIGH);
-    // digitalWrite(greenEyes, LOW);
-    // delay(3000);
-
-    int val = digitalRead(modeSelectGpioIn);
-    LOG_RAW("Val: %d", val);
-    delay(0.1);
+    eyes.setColour(Eyes::Colour::light_blue);
+    delay(1000);
+    eyes.setColour(Eyes::Colour::magenta);
+    delay(1000);
   }
 }

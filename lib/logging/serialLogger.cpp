@@ -1,8 +1,6 @@
 #include "serialLogger.hpp"
 #include <Arduino.h>
 
-namespace hugo
-{
 void SerialLogger::init()
 {
   Serial.begin(115200);
@@ -19,5 +17,3 @@ SerialLogger& SerialLogger::getInstance()
 {
   return SerialLogger::instance;
 }
-
-} // namespace hugo

@@ -1,9 +1,6 @@
 #pragma once
 #include <string>
 
-namespace hugo
-{
-
 class SerialLogger
 {
  public:
@@ -20,5 +17,3 @@ class SerialLogger
   SerialLogger() = default;
   static SerialLogger instance;
 };
-
-} // namespace hugo

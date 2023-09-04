@@ -32,4 +32,4 @@ template <typename... Args> std::string format(char const* format, Args... args)
 }
 
 #define LOG_RAW(fmt, ...)                                                      \
-  hugo::SerialLogger::getInstance().log(format(fmt, ##__VA_ARGS__))
+  SerialLogger::getInstance().log(format(fmt, ##__VA_ARGS__))
