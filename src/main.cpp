@@ -26,19 +26,20 @@ void loop()
   SonarArray sonarArray;
 
   Joints joints;
-  Joints::Limits limits = joints.getLimits(Joints::Name::left_shoulder);
+
   while (true)
   {
-    for (int i = limits.minAngle; i < limits.maxAngle; i++)
-    {
-      joints.setAngle(Joints::Name::left_shoulder, i);
-      delay(5);
-    }
-
-    for (int i = limits.maxAngle; i > limits.minAngle; i--)
-    {
-      joints.setAngle(Joints::Name::left_shoulder, i);
-      delay(5);
-    }
+    joints.setAngle(Joints::Name::right_shoulder, 60);
+    joints.setAngle(Joints::Name::left_shoulder, 60);
+    delay(2000);
+    joints.setAngle(Joints::Name::right_shoulder, 0);
+    joints.setAngle(Joints::Name::left_shoulder, 0);
+    delay(2000);
+    joints.setAngle(Joints::Name::right_shoulder, -60);
+    joints.setAngle(Joints::Name::left_shoulder, -60);
+    delay(2000);
+    joints.setAngle(Joints::Name::right_shoulder, 0);
+    joints.setAngle(Joints::Name::left_shoulder, 0);
+    delay(2000);
   }
 }

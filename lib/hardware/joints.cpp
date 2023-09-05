@@ -1,4 +1,5 @@
 #include "joints.hpp"
+#include "log.hpp"
 
 Joints::Joints() : angleToDutyLinearCycleMap(ANGLE_TO_DUTY_CYCLE_PARAMS)
 {
@@ -6,13 +7,26 @@ Joints::Joints() : angleToDutyLinearCycleMap(ANGLE_TO_DUTY_CYCLE_PARAMS)
   this->pwmDriverBoard.setPWMFreq(PWM_FREQUENCY_HZ);
   this->pwmDriverBoard.setOscillatorFrequency(OSCILLATOR_FREQUENCY_HZ);
   delay(10);
+
+  this->setAngle(Name::left_shoulder, 0);
+  this->setAngle(Name::right_shoulder, 0);
+  delay(3000);
 }
 
 void Joints::setAngle(Name name, int angle)
 {
+  int offsetAngle = this->accountForZeroOffset(name, angle);
   uint32_t servoNumber = this->servoNumber(name);
-  uint32_t dutyCycle = this->angleToDutyLinearCycleMap.getOutput(angle);
+  uint32_t dutyCycle = static_cast<uint32_t>(
+      this->angleToDutyLinearCycleMap.getOutput(offsetAngle));
   this->pwmDriverBoard.setPWM(servoNumber, PULSE_SIGNAL_START, dutyCycle);
+
+  LOG_RAW("%s, Angle: %d, Offset Angle: %d, ServoNumber: %u, DutyCycle: %u\r\n",
+          this->toString(name),
+          angle,
+          offsetAngle,
+          servoNumber,
+          dutyCycle);
 }
 
 Joints::Limits Joints::getLimits(Name name) const
@@ -33,10 +47,36 @@ uint8_t Joints::servoNumber(Name name) const
   switch (name)
   {
     case Name::waist:
-      return 1;
-    case Name::right_shoulder:
       return 2;
+    case Name::right_shoulder:
+      return 1;
     case Name::left_shoulder:
       return 0;
+  }
+}
+
+int Joints::accountForZeroOffset(Name name, int angle) const
+{
+  switch (name)
+  {
+    case Name::waist:
+      return angle;
+    case Name::right_shoulder:
+      return RIGHT_SHOULDER_ZERO_OFFSET - angle;
+    case Name::left_shoulder:
+      return angle + LEFT_SHOULDER_ZERO_OFFSET;
+  }
+}
+
+std::string Joints::toString(Name name)
+{
+  switch (name)
+  {
+    case Name::waist:
+      return "WAIST";
+    case Name::right_shoulder:
+      return "RIGHT_SHOULDER";
+    case Name::left_shoulder:
+      return "LEFT_SHOULDER";
   }
 }
