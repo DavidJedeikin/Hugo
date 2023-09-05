@@ -41,7 +41,7 @@ void loop()
 
   Eyes eyes;
   eyes.setColour(Eyes::Colour::light_blue);
-  // SonarArray sonarArray;
+  SonarArray sonarArray;
 
   while (true)
   {
