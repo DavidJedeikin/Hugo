@@ -25,4 +25,5 @@ Checks: >
   -readability-container-contains, # doesn't work for files compiled for both C++17 and C++20,
   -cppcoreguidelines-avoid-magic-numbers,
   -readability-function-cognitive-complexity
+  -misc-include-cleaner
 WarningsAsErrors: "*"

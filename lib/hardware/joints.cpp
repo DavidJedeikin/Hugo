@@ -8,12 +8,14 @@ Joints::Joints() : angleToDutyLinearCycleMap(ANGLE_TO_DUTY_CYCLE_PARAMS)
   this->pwmDriverBoard.setOscillatorFrequency(OSCILLATOR_FREQUENCY_HZ);
   delay(10);
 
+  this->setAngle(Name::waist, 0);
   this->setAngle(Name::left_shoulder, 0);
   this->setAngle(Name::right_shoulder, 0);
-  LOG_INFO("Setting %s & %s to position: 0 and delaying for 3 seconds\r\n",
+
+  LOG_INFO("Setting %s, %s & %s to position: 0",
+           this->toString(Name::waist),
            this->toString(Name::left_shoulder),
            this->toString(Name::right_shoulder));
-  delay(3000);
 }
 
 void Joints::setAngle(Name name, int angle)

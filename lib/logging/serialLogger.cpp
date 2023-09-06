@@ -1,6 +1,8 @@
 #include "serialLogger.hpp"
 #include <Arduino.h>
 
+// Come back to this, really seems overkill
+
 void SerialLogger::init()
 {
   Serial.begin(115200);
