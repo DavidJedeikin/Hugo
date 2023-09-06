@@ -29,10 +29,10 @@ void DanceState::runOnce()
 
   LOG_INFO("Distance: %.0f, Speed: %d", distance, sweepSpeedMs);
 
-  if (distance < 100)
+  if (distance < 130)
   {
     this->hardware.eyes.setColour(Eyes::Colour::red);
-    BodyMotion::minFullSweep(this->hardware.joints, sweepSpeedMs, -18);
+    BodyMotion::minFullSweep(this->hardware.joints, sweepSpeedMs, -15);
     delay(250);
   }
   else

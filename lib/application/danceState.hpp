@@ -15,6 +15,6 @@ class DanceState : public IState
   Hardware& hardware;
 
   LinearMap::Params distanceToDanceSpeedParams{
-      .inputMin = 30, .inputMax = 150, .outputMin = 1000, .outputMax = 2500};
+      .inputMin = 55, .inputMax = 180, .outputMin = 1000, .outputMax = 2000};
   LinearMap distanceToDanceSpeedMap;
 };
