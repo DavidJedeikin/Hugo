@@ -26,6 +26,7 @@ class Joints
   void setAngle(Name name, int angle);
 
   [[nodiscard]] Limits getLimits(Name name) const;
+  [[nodiscard]] int getLimitsRange(Name name) const;
 
  private:
   //////////////////////////////////////////////////////////////////////
@@ -56,13 +57,13 @@ class Joints
   static constexpr LinearMap::Params ANGLE_TO_DUTY_CYCLE_PARAMS{
       .inputMin = 0,
       .inputMax = 180,
-      .outputMin = 60,
-      .outputMax = 450,
+      .outputMin = 60,  // DUTY CYCLE FOR 0
+      .outputMax = 450, // DUTY CYCLE FOR 180
   };
 
   LinearMap angleToDutyLinearCycleMap;
   Adafruit_PWMServoDriver pwmDriverBoard;
 
-  [[nodiscard]] uint8_t servoNumber(Name name) const;
   int accountForZeroOffset(Name name, int angle) const;
+  [[nodiscard]] uint8_t servoNumber(Name name) const;
 };

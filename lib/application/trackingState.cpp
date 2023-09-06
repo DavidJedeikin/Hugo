@@ -8,6 +8,7 @@ TrackingState::TrackingState(Hardware& hardware) : hardware(hardware)
 void TrackingState::enter()
 {
   LOG_INFO("Entering the %s", this->name());
+  this->hardware.eyes.setColour(Eyes::Colour::green);
 }
 
 void TrackingState::runOnce()

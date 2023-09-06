@@ -1,6 +1,7 @@
 #pragma once
 #include "hardware.hpp"
 #include "iState.hpp"
+#include "linearMap.hpp"
 
 class DanceState : public IState
 {
@@ -12,4 +13,8 @@ class DanceState : public IState
 
  private:
   Hardware& hardware;
+
+  LinearMap::Params distanceToDanceSpeedParams{
+      .inputMin = 30, .inputMax = 150, .outputMin = 1000, .outputMax = 2500};
+  LinearMap distanceToDanceSpeedMap;
 };

@@ -1,5 +1,6 @@
 #include "joints.hpp"
 #include "log.hpp"
+#include <algorithm>
 
 Joints::Joints() : angleToDutyLinearCycleMap(ANGLE_TO_DUTY_CYCLE_PARAMS)
 {
@@ -20,19 +21,38 @@ Joints::Joints() : angleToDutyLinearCycleMap(ANGLE_TO_DUTY_CYCLE_PARAMS)
 
 void Joints::setAngle(Name name, int angle)
 {
+  Limits limits = this->getLimits(name);
+  if (angle < limits.minAngle || angle > limits.maxAngle)
+  {
+    int angleRequest = angle;
+    angle = std::clamp(angleRequest, limits.minAngle, limits.maxAngle);
+
+    LOG_WARN("Attempted to set an angle: %d, which is out of bound [%d, %d] - "
+             "Clamping angle at: %d",
+             angleRequest,
+             limits.minAngle,
+             limits.maxAngle,
+             angle);
+  }
+
   int offsetAngle = this->accountForZeroOffset(name, angle);
   uint32_t servoNumber = this->servoNumber(name);
   uint32_t dutyCycle = static_cast<uint32_t>(
       this->angleToDutyLinearCycleMap.getOutput(offsetAngle));
   this->pwmDriverBoard.setPWM(servoNumber, PULSE_SIGNAL_START, dutyCycle);
+}
 
-  LOG_INFO(
-      "%s, Angle: %d, Offset Angle: %d, ServoNumber: %u, DutyCycle: %u\r\n",
-      this->toString(name),
-      angle,
-      offsetAngle,
-      servoNumber,
-      dutyCycle);
+int Joints::accountForZeroOffset(Name name, int angle) const
+{
+  switch (name)
+  {
+    case Name::waist:
+      return WAIST_ZERO_OFFSET + angle;
+    case Name::right_shoulder:
+      return RIGHT_SHOULDER_ZERO_OFFSET - angle;
+    case Name::left_shoulder:
+      return angle + LEFT_SHOULDER_ZERO_OFFSET;
+  }
 }
 
 Joints::Limits Joints::getLimits(Name name) const
@@ -48,6 +68,12 @@ Joints::Limits Joints::getLimits(Name name) const
   }
 }
 
+int Joints::getLimitsRange(Name name) const
+{
+  auto limits = this->getLimits(name);
+  return limits.maxAngle - limits.minAngle;
+}
+
 uint8_t Joints::servoNumber(Name name) const
 {
   switch (name)
@@ -58,19 +84,6 @@ uint8_t Joints::servoNumber(Name name) const
       return 1;
     case Name::left_shoulder:
       return 0;
-  }
-}
-
-int Joints::accountForZeroOffset(Name name, int angle) const
-{
-  switch (name)
-  {
-    case Name::waist:
-      return WAIST_ZERO_OFFSET + angle;
-    case Name::right_shoulder:
-      return RIGHT_SHOULDER_ZERO_OFFSET - angle;
-    case Name::left_shoulder:
-      return angle + LEFT_SHOULDER_ZERO_OFFSET;
   }
 }
 

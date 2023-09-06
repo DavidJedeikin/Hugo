@@ -33,7 +33,6 @@ void Application::run()
     {
       this->currentState->runOnce();
     }
-    delay(1000);
   }
 }
 

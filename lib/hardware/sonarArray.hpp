@@ -8,6 +8,7 @@ class SonarArray
   {
     float right;
     float left;
+    float min;
     [[nodiscard]] std::string toString() const;
   };
 

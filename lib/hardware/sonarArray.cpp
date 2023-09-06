@@ -15,6 +15,7 @@ SonarArray::Distance SonarArray::getDistance()
   this->distance.right = getDistance(this->rightSensor);
   delay(30);
   this->distance.left = getDistance(this->leftSensor);
+  this->distance.min = std::min(this->distance.right, this->distance.left);
   return this->distance;
 }
 
@@ -31,5 +32,6 @@ float SonarArray::getDistance(Hcsr04Sensor sensor)
 
 std::string SonarArray::Distance::toString() const
 {
-  return format("Right: %.0f, Left: %.0f", this->right, this->left);
+  return format(
+      "Right: %.0f, Left: %.0f Min: %.0f", this->right, this->left, this->min);
 }
