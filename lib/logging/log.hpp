@@ -31,5 +31,13 @@ template <typename... Args> std::string format(char const* format, Args... args)
   return {buf.get()};
 }
 
+#define LOG_INFO(fmt, ...)                                                     \
+  SerialLogger::getInstance().log(                                             \
+      format(" \e[38;5;220m[INFO]\e[0m " fmt "\r\n", ##__VA_ARGS__))
+
+#define LOG_WARN(fmt, ...)                                                     \
+  SerialLogger::getInstance().log(                                             \
+      format(" \e[38;5;202m[WARN]\e[0m " fmt "\r\n", ##__VA_ARGS__))
+
 #define LOG_RAW(fmt, ...)                                                      \
   SerialLogger::getInstance().log(format(fmt, ##__VA_ARGS__))

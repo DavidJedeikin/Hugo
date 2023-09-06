@@ -10,6 +10,9 @@ Joints::Joints() : angleToDutyLinearCycleMap(ANGLE_TO_DUTY_CYCLE_PARAMS)
 
   this->setAngle(Name::left_shoulder, 0);
   this->setAngle(Name::right_shoulder, 0);
+  LOG_INFO("Setting %s & %s to position: 0 and delaying for 3 seconds\r\n",
+           this->toString(Name::left_shoulder),
+           this->toString(Name::right_shoulder));
   delay(3000);
 }
 
@@ -21,12 +24,13 @@ void Joints::setAngle(Name name, int angle)
       this->angleToDutyLinearCycleMap.getOutput(offsetAngle));
   this->pwmDriverBoard.setPWM(servoNumber, PULSE_SIGNAL_START, dutyCycle);
 
-  LOG_RAW("%s, Angle: %d, Offset Angle: %d, ServoNumber: %u, DutyCycle: %u\r\n",
-          this->toString(name),
-          angle,
-          offsetAngle,
-          servoNumber,
-          dutyCycle);
+  LOG_INFO(
+      "%s, Angle: %d, Offset Angle: %d, ServoNumber: %u, DutyCycle: %u\r\n",
+      this->toString(name),
+      angle,
+      offsetAngle,
+      servoNumber,
+      dutyCycle);
 }
 
 Joints::Limits Joints::getLimits(Name name) const
