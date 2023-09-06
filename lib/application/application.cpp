@@ -23,14 +23,24 @@ void Application::run()
 {
   while (true)
   {
-    if (this->hardware->modeSwitch.getState() == Switch::State::on)
+    auto desiredState = this->getDesiredState();
+    if (this->currentState != desiredState)
     {
-      this->danceState->enter();
+      this->currentState = desiredState;
+      this->currentState->enter();
     }
     else
     {
-      this->trackingState->enter();
+      this->currentState->runOnce();
     }
-    delay(500);
+    delay(1000);
   }
+}
+
+IState* Application::getDesiredState()
+{
+  // In the future you could use whatever signal to select the desired state
+  return this->hardware->modeSwitch.getState() == Switch::State::on
+             ? this->danceState.get()
+             : this->trackingState.get();
 }

@@ -17,4 +17,6 @@ class Application
   IState* currentState{nullptr};
   std::unique_ptr<IState> danceState{nullptr};
   std::unique_ptr<IState> trackingState{nullptr};
+
+  IState* getDesiredState();
 };
