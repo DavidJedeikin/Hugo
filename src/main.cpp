@@ -27,19 +27,29 @@ void loop()
 
   Joints joints;
 
+  uint32_t wait{5};
+
+  for (int i = 0; i < 20; i++)
+  {
+    joints.setAngle(Joints::Name::left_shoulder, i);
+    joints.setAngle(Joints::Name::waist, i);
+    delay(wait);
+  }
   while (true)
   {
-    joints.setAngle(Joints::Name::right_shoulder, 60);
-    joints.setAngle(Joints::Name::left_shoulder, 60);
-    delay(2000);
-    joints.setAngle(Joints::Name::right_shoulder, 0);
-    joints.setAngle(Joints::Name::left_shoulder, 0);
-    delay(2000);
-    joints.setAngle(Joints::Name::right_shoulder, -60);
-    joints.setAngle(Joints::Name::left_shoulder, -60);
-    delay(2000);
-    joints.setAngle(Joints::Name::right_shoulder, 0);
-    joints.setAngle(Joints::Name::left_shoulder, 0);
-    delay(2000);
+    for (int i = 20; i > -20; i--)
+    {
+      joints.setAngle(Joints::Name::left_shoulder, i);
+      joints.setAngle(Joints::Name::right_shoulder, -1 * i);
+      joints.setAngle(Joints::Name::waist, i);
+      delay(wait);
+    }
+    for (int i = -20; i < 20; i++)
+    {
+      joints.setAngle(Joints::Name::left_shoulder, i);
+      joints.setAngle(Joints::Name::right_shoulder, -1 * i);
+      joints.setAngle(Joints::Name::waist, i);
+      delay(wait);
+    }
   }
 }

@@ -28,11 +28,15 @@ class Joints
   [[nodiscard]] Limits getLimits(Name name) const;
 
  private:
+  //////////////////////////////////////////////////////////////////////
+  // TODO!!! Set maximum allowed angles
+  //////////////////////////////////////////////////////////////////////
+
   static constexpr uint32_t PULSE_SIGNAL_START{0};
   static constexpr uint32_t PWM_FREQUENCY_HZ{50};
   static constexpr uint32_t OSCILLATOR_FREQUENCY_HZ{25000000};
 
-  static constexpr int WAIST_ZERO_OFFSET{0};
+  static constexpr int WAIST_ZERO_OFFSET{85};
   static constexpr int RIGHT_SHOULDER_ZERO_OFFSET{120};
   static constexpr int LEFT_SHOULDER_ZERO_OFFSET{60};
 

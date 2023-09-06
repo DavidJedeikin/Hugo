@@ -64,7 +64,7 @@ int Joints::accountForZeroOffset(Name name, int angle) const
   switch (name)
   {
     case Name::waist:
-      return angle;
+      return WAIST_ZERO_OFFSET + angle;
     case Name::right_shoulder:
       return RIGHT_SHOULDER_ZERO_OFFSET - angle;
     case Name::left_shoulder:
