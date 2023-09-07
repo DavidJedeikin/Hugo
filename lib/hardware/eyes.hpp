@@ -18,6 +18,7 @@ class Eyes
 
   Eyes();
   void setColour(Colour colour);
+  void crossFade(Colour from, Colour to, int milliSeconds);
 
  private:
   int redPin{A0};
@@ -26,5 +27,9 @@ class Eyes
 
   RGBLed eyes;
 
+  std::array<int, 3> getRgb(Colour colour);
+  inline static std::array<int, 3> RGB_OFF{0, 0, 0};
   inline static std::array<int, 3> RGB_LIGHT_BLUE{173, 216, 255};
+
+  std::array<int, 3> stdArrayFromCStyleRgb(int (&rgb)[3]);
 };

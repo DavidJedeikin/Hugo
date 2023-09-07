@@ -6,25 +6,35 @@ Eyes::Eyes() : eyes(redPin, greenPin, bluePin, RGBLed::COMMON_ANODE)
 
 void Eyes::setColour(Colour colour)
 {
+  this->eyes.setColor(this->getRgb(colour).data());
+}
+
+void Eyes::crossFade(Colour from, Colour to, int milliSeconds)
+{
+  this->eyes.crossFade(
+      this->getRgb(from).data(), this->getRgb(to).data(), 100, milliSeconds);
+}
+
+std::array<int, 3> Eyes::getRgb(Colour colour)
+{
   switch (colour)
   {
     case Colour::red:
-      this->eyes.setColor(RGBLed::RED);
-      break;
+      return this->stdArrayFromCStyleRgb(RGBLed::RED);
     case Colour::green:
-      this->eyes.setColor(RGBLed::GREEN);
-      break;
+      return this->stdArrayFromCStyleRgb(RGBLed::GREEN);
     case Colour::blue:
-      this->eyes.setColor(RGBLed::BLUE);
-      break;
+      return this->stdArrayFromCStyleRgb(RGBLed::BLUE);
     case Colour::magenta:
-      this->eyes.setColor(RGBLed::MAGENTA);
-      break;
+      return this->stdArrayFromCStyleRgb(RGBLed::MAGENTA);
     case Colour::off:
-      this->eyes.off();
-      break;
+      return this->RGB_OFF;
     case Colour::light_blue:
-      this->eyes.setColor(this->RGB_LIGHT_BLUE.data());
-      break;
+      return this->RGB_LIGHT_BLUE;
   }
+}
+
+std::array<int, 3> Eyes::stdArrayFromCStyleRgb(int (&rgb)[3])
+{
+  return {rgb[0], rgb[1], rgb[2]};
 }

@@ -13,7 +13,11 @@ void TrackingState::enter()
 
 void TrackingState::runOnce()
 {
-  LOG_INFO("Running the %s once", this->name());
+  this->hardware.eyes.crossFade(
+      Eyes::Colour::light_blue, Eyes::Colour::red, 2000);
+  delay(1000);
+  this->hardware.eyes.crossFade(
+      Eyes::Colour::red, Eyes::Colour::light_blue, 2000);
 }
 
 char const* TrackingState::name()
