@@ -5,6 +5,12 @@
 
 namespace BodyMotion
 {
+void allJointsToZero(Joints& joints)
+{
+  joints.setAngle(Joints::Name::waist, 0);
+  joints.setAngle(Joints::Name::left_shoulder, 0);
+  joints.setAngle(Joints::Name::right_shoulder, 0);
+}
 
 void minFullSweep(Joints& joints, int milliSeconds, int armOffset)
 {

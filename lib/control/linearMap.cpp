@@ -1,6 +1,7 @@
 #include "linearMap.hpp"
+#include <algorithm>
 
-LinearMap::LinearMap(Params params)
+LinearMap::LinearMap(Params params) : params(params)
 {
   this->m = (params.outputMax - params.outputMin) /
             (params.inputMax - params.inputMin);
@@ -10,5 +11,7 @@ LinearMap::LinearMap(Params params)
 float LinearMap::getOutput(float input)
 {
   // y = m * x + c
-  return this->m * input + this->c;
+  return std::clamp(this->m * input + this->c,
+                    this->params.outputMin,
+                    this->params.outputMax);
 }

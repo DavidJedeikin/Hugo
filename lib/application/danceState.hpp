@@ -12,6 +12,8 @@ class DanceState : public IState
   char const* name() override;
 
  private:
+  bool inSafeMode{false};
+
   enum class DetectionState
   {
     detected,
@@ -29,14 +31,19 @@ class DanceState : public IState
     std::string toString();
   };
 
+  Eyes::Colour currentEyeColour;
   ObjectState currentObjectState;
 
   Hardware& hardware;
 
-  static constexpr float DETECTION_DISTANCE_CM{20};
+  static constexpr float MIN_DISTANCE_CM{50};
+  static constexpr float DETECTION_DISTANCE_CM{130};
 
-  LinearMap::Params distanceToDanceSpeedParams{
-      .inputMin = 55, .inputMax = 180, .outputMin = 1000, .outputMax = 2000};
+  LinearMap::Params distanceToDanceSpeedParams{.inputMin = MIN_DISTANCE_CM,
+                                               .inputMax =
+                                                   DETECTION_DISTANCE_CM,
+                                               .outputMin = 1500,
+                                               .outputMax = 3500};
   LinearMap distanceToDanceSpeedMap;
 
   void updateCurrentObjectState();

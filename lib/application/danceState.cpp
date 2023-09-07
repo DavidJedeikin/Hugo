@@ -17,6 +17,7 @@ void DanceState::enter()
     this->hardware.eyes.setColour(Eyes::Colour::light_blue);
     delay(100);
   }
+  this->currentEyeColour = Eyes::Colour::light_blue;
   delay(100);
 }
 
@@ -24,27 +25,55 @@ void DanceState::runOnce()
 {
   this->updateCurrentObjectState();
   LOG_INFO("%s", this->currentObjectState.toString());
+
   switch (this->currentObjectState.detectionState)
   {
     case DetectionState::detected: {
+      this->inSafeMode = false;
       this->hardware.eyes.crossFade(
-          Eyes::Colour::light_blue, Eyes::Colour::red, 1000);
+          this->currentEyeColour, Eyes::Colour::red, 1000);
+      this->currentEyeColour = Eyes::Colour::red;
       break;
     }
     case DetectionState::still_detected: {
+      if (this->currentObjectState.distance < MIN_DISTANCE_CM)
+      {
+        if (this->inSafeMode)
+        {
+          return;
+        }
+        this->inSafeMode = true;
+        this->hardware.eyes.crossFade(
+            this->currentEyeColour, Eyes::Colour::off, 500);
+        this->currentEyeColour = Eyes::Colour::off;
+        BodyMotion::moveArms(this->hardware.joints, 0, -30, 50);
+        // delay(200);
+        // BodyMotion::moveArms(this->hardware.joints, -30, -15, 50);
+        return;
+      }
+      else
+      {
+        this->inSafeMode = false;
+        this->hardware.eyes.setColour(Eyes::Colour::red);
+        this->currentEyeColour = Eyes::Colour::red;
+      }
       int sweepSpeedMs =
           static_cast<int>(this->distanceToDanceSpeedMap.getOutput(
               this->currentObjectState.distance));
-      // BodyMotion::minFullSweep(this->hardware.joints, sweepSpeedMs, -15);
+      BodyMotion::minFullSweep(this->hardware.joints, sweepSpeedMs, -15);
       break;
     }
     case DetectionState::gone: {
+      this->inSafeMode = false;
       this->hardware.eyes.crossFade(
-          Eyes::Colour::red, Eyes::Colour::light_blue, 1000);
+          this->currentEyeColour, Eyes::Colour::light_blue, 1000);
+      this->currentEyeColour = Eyes::Colour::light_blue;
       break;
     }
     case DetectionState::still_gone: {
+      this->inSafeMode = false;
       this->hardware.eyes.setColour(Eyes::Colour::light_blue);
+      this->currentEyeColour = Eyes::Colour::light_blue;
       break;
     }
   }

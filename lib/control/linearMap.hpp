@@ -16,6 +16,7 @@ class LinearMap
   float getOutput(float input);
 
  private:
+  Params params;
   float m;
   float c;
 };

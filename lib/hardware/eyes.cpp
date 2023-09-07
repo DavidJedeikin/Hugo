@@ -27,10 +27,12 @@ std::array<int, 3> Eyes::getRgb(Colour colour)
       return this->stdArrayFromCStyleRgb(RGBLed::BLUE);
     case Colour::magenta:
       return this->stdArrayFromCStyleRgb(RGBLed::MAGENTA);
-    case Colour::off:
-      return this->RGB_OFF;
+    case Colour::white:
+      return this->stdArrayFromCStyleRgb(RGBLed::WHITE);
     case Colour::light_blue:
       return this->RGB_LIGHT_BLUE;
+    case Colour::off:
+      return this->RGB_OFF;
   }
 }
 

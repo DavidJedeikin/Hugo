@@ -13,7 +13,8 @@ class Eyes
     green,
     blue,
     light_blue,
-    magenta
+    magenta,
+    white,
   };
 
   Eyes();
