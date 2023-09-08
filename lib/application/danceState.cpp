@@ -84,7 +84,7 @@ DanceState::State::State(DanceState& parent,
 
 void DanceState::State::enter()
 {
-  LOG_INFO("Entering %s", this->name());
+  LOG_INFO("Entering %s::%s", this->parent.name(), this->name());
   this->parent.currentState = this;
   this->parent.hardware.eyes.crossFade(
       this->parent.currentEyeColour, this->eyeColour, this->eyeTransitionTime);
@@ -113,7 +113,7 @@ void DanceState::TooCloseState::enter()
 
 void DanceState::TooCloseState::runOnce()
 {
-  LOG_INFO("Running %s Once", this->name());
+  LOG_INFO("Running %s::%s", this->parent.name(), this->name());
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -139,10 +139,9 @@ void DanceState::WithinRangeState::enter()
 
 void DanceState::WithinRangeState::runOnce()
 {
-  LOG_INFO("Running %s Once", this->name());
+  LOG_INFO("Running %s::%s", this->parent.name(), this->name());
   this->danceSpeed =
       this->parent.distanceToSpeed.getOutput(this->parent.objectDistance);
-  LOG_INFO("Dance speed: %d", this->danceSpeed);
   BodyMotion::minFullSweep(this->parent.hardware.joints,
                            this->danceSpeed,
                            this->parent.armMotionOffset);
@@ -167,5 +166,5 @@ void DanceState::OutOfRangeState::enter()
 
 void DanceState::OutOfRangeState::runOnce()
 {
-  LOG_INFO("Running %s Once", this->name());
+  LOG_INFO("Running %s::%s", this->parent.name(), this->name());
 }
