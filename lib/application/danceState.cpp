@@ -70,20 +70,44 @@ IState* DanceState::getDesiredState()
 }
 
 //////////////////////////////////////////////////////////////////////
+// Base State
+//////////////////////////////////////////////////////////////////////
+
+DanceState::State::State(DanceState& parent,
+                         std::string&& stateName,
+                         Eyes::Colour eyeColour,
+                         int eyeTransitionTime)
+    : parent(parent), stateName(stateName), eyeColour(eyeColour),
+      eyeTransitionTime(eyeTransitionTime)
+{
+}
+
+void DanceState::State::enter()
+{
+  LOG_INFO("Entering %s", this->name());
+  this->parent.currentState = this;
+  this->parent.hardware.eyes.crossFade(
+      this->parent.currentEyeColour, this->eyeColour, this->eyeTransitionTime);
+  this->parent.currentEyeColour = this->eyeColour;
+}
+
+char const* DanceState::State::name()
+{
+  return this->stateName.c_str();
+}
+
+//////////////////////////////////////////////////////////////////////
 // TooCloseState
 //////////////////////////////////////////////////////////////////////
 
-DanceState::TooCloseState::TooCloseState(DanceState& parent) : parent(parent)
+DanceState::TooCloseState::TooCloseState(DanceState& parent)
+    : State(parent, "TooCloseState", Eyes::Colour::green, EYE_TRANSITION_TIME)
 {
 }
 
 void DanceState::TooCloseState::enter()
 {
-  LOG_INFO("Entering %s", this->name());
-  this->parent.currentState = this;
-  this->parent.hardware.eyes.crossFade(
-      this->parent.currentEyeColour, this->eyeColour, 1000);
-  this->parent.currentEyeColour = this->eyeColour;
+  State::enter();
 }
 
 void DanceState::TooCloseState::runOnce()
@@ -91,27 +115,18 @@ void DanceState::TooCloseState::runOnce()
   LOG_INFO("Running %s Once", this->name());
 }
 
-char const* DanceState::TooCloseState::name()
-{
-  return "TooCloseState";
-}
-
 //////////////////////////////////////////////////////////////////////
 // WithinRangeState
 //////////////////////////////////////////////////////////////////////
 
 DanceState::WithinRangeState::WithinRangeState(DanceState& parent)
-    : parent(parent)
+    : State(parent, "WithinRangeState", Eyes::Colour::red, EYE_TRANSITION_TIME)
 {
 }
 
 void DanceState::WithinRangeState::enter()
 {
-  LOG_INFO("Entering %s", this->name());
-  this->parent.currentState = this;
-  this->parent.hardware.eyes.crossFade(
-      this->parent.currentEyeColour, this->eyeColour, 1000);
-  this->parent.currentEyeColour = this->eyeColour;
+  State::enter();
 }
 
 void DanceState::WithinRangeState::runOnce()
@@ -119,35 +134,24 @@ void DanceState::WithinRangeState::runOnce()
   LOG_INFO("Running %s Once", this->name());
 }
 
-char const* DanceState::WithinRangeState::name()
-{
-  return "WithinRangeState";
-}
-
 //////////////////////////////////////////////////////////////////////
 // OutOfRangeState
 //////////////////////////////////////////////////////////////////////
 
 DanceState::OutOfRangeState::OutOfRangeState(DanceState& parent)
-    : parent(parent)
+    : State(parent,
+            "OutOfRangeState",
+            Eyes::Colour::light_blue,
+            EYE_TRANSITION_TIME)
 {
 }
 
 void DanceState::OutOfRangeState::enter()
 {
-  LOG_INFO("Entering %s", this->name());
-  this->parent.currentState = this;
-  this->parent.hardware.eyes.crossFade(
-      this->parent.currentEyeColour, this->eyeColour, 1000);
-  this->parent.currentEyeColour = this->eyeColour;
+  State::enter();
 }
 
 void DanceState::OutOfRangeState::runOnce()
 {
   LOG_INFO("Running %s Once", this->name());
-}
-
-char const* DanceState::OutOfRangeState::name()
-{
-  return "OutOfRangeState";
 }

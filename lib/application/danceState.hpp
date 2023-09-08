@@ -15,6 +15,7 @@ class DanceState : public IState
   float objectDistance{0};
   Hardware& hardware;
   Eyes::Colour currentEyeColour{Eyes::Colour::light_blue};
+  static constexpr uint32_t EYE_TRANSITION_TIME{500};
 
   //////////////////////////////////////////////////////////////////////
   // Distance Params
@@ -30,49 +31,50 @@ class DanceState : public IState
   //////////////////////////////////////////////////////////////////////
   // States
   //////////////////////////////////////////////////////////////////////
-  IState* currentState{nullptr};
 
+  IState* currentState{nullptr};
   IState* getDesiredState();
 
-  class TooCloseState : public IState
+  class State : public IState
+  {
+   public:
+    State(DanceState& parent,
+          std::string&& stateName,
+          Eyes::Colour eyeColour,
+          int eyeTransitionTime);
+    void enter() override;
+    char const* name() override;
+
+   private:
+    DanceState& parent;
+    std::string stateName;
+    Eyes::Colour eyeColour;
+    int eyeTransitionTime;
+  };
+
+  class TooCloseState : public State
+
   {
    public:
     TooCloseState(DanceState& parent);
     void enter() override;
     void runOnce() override;
-    char const* name() override;
-
-   private:
-    DanceState& parent;
-    Eyes::Colour eyeColour{Eyes::Colour::green};
-
   } tooCloseState;
 
-  class WithinRangeState : public IState
+  class WithinRangeState : public State
   {
    public:
     WithinRangeState(DanceState& parent);
     void enter() override;
     void runOnce() override;
-    char const* name() override;
-
-   private:
-    DanceState& parent;
-    Eyes::Colour eyeColour{Eyes::Colour::red};
-
   } withinRangeState;
 
-  class OutOfRangeState : public IState
+  class OutOfRangeState : public State
   {
    public:
     OutOfRangeState(DanceState& parent);
     void enter() override;
     void runOnce() override;
-    char const* name() override;
-
-   private:
-    DanceState& parent;
-    Eyes::Colour eyeColour{Eyes::Colour::light_blue};
 
   } outOfRangeState;
 };
