@@ -3,8 +3,8 @@
 #include "log.hpp"
 
 TrackingState::TrackingState(Hardware& hardware)
-    : hardware(hardware), tooCloseState(*this), withinRangeState(*this),
-      outOfRangeState(*this)
+    : hardware(hardware), pidController(this->pidParams), tooCloseState(*this),
+      withinRangeState(*this), outOfRangeState(*this)
 {
   this->outOfRangeState.enter();
 }
@@ -19,11 +19,6 @@ void TrackingState::enter()
 void TrackingState::runOnce()
 {
   auto desiredState = this->getDesiredState();
-  LOG_INFO("Distance: %.2f, Min: %.2f, Max: %.2f",
-           this->objectDistance,
-           MIN_DISTANCE_CM,
-           MAX_DISTANCE_CM);
-
   if (desiredState == nullptr)
   {
     LOG_WARN("%s", "Desired state is a nullptr");
@@ -103,13 +98,16 @@ TrackingState::TooCloseState::TooCloseState(TrackingState& parent)
 
 void TrackingState::TooCloseState::enter()
 {
-  BodyMotion::setArms(this->parent.hardware.joints, -30);
   State::enter();
 }
 
 void TrackingState::TooCloseState::runOnce()
 {
-  LOG_INFO("runOncening %s::%s", this->parent.name(), this->name());
+  LOG_INFO("Running once %s::%s", this->parent.name(), this->name());
+  LOG_INFO("Distance: %.2f, Min: %.2f, Max: %.2f",
+           this->parent.objectDistance,
+           MIN_DISTANCE_CM,
+           MAX_DISTANCE_CM);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -128,7 +126,31 @@ void TrackingState::WithinRangeState::enter()
 
 void TrackingState::WithinRangeState::runOnce()
 {
-  LOG_INFO("runOncening %s::%s", this->parent.name(), this->name());
+  // LOG_INFO("Running once %s::%s", this->parent.name(), this->name());
+
+  SonarArray::Distance distance =
+      this->parent.hardware.sonarArray.getDistance();
+  float difference = distance.left - distance.right;
+  if (std::fabs(difference) > 10)
+  {
+    if (difference < 0.0F)
+    {
+      this->parent.waistAngle -= 5;
+    }
+    else
+    {
+      this->parent.waistAngle += 5;
+    }
+  }
+  LOG_INFO("%s", distance.toString());
+  LOG_INFO("Difference: %s, Waist Angle: %d",
+           difference < 0 ? "Negative" : "Positive",
+           this->parent.waistAngle);
+
+  this->parent.hardware.joints.setAngle(Joints::Name::waist,
+                                        this->parent.waistAngle);
+
+  delay(this->parent.pidParams.timestepMs);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -150,5 +172,9 @@ void TrackingState::OutOfRangeState::enter()
 
 void TrackingState::OutOfRangeState::runOnce()
 {
-  LOG_INFO("runOncening %s::%s", this->parent.name(), this->name());
+  LOG_INFO("Running once %s::%s", this->parent.name(), this->name());
+  LOG_INFO("Distance: %.2f, Min: %.2f, Max: %.2f",
+           this->parent.objectDistance,
+           MIN_DISTANCE_CM,
+           MAX_DISTANCE_CM);
 }

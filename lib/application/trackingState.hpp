@@ -1,6 +1,7 @@
 #pragma once
 #include "hardware.hpp"
 #include "iState.hpp"
+#include "pidController.hpp"
 
 class TrackingState : public IState
 {
@@ -17,9 +18,22 @@ class TrackingState : public IState
   Eyes::Colour currentEyeColour{Eyes::Colour::light_blue};
   static constexpr uint32_t EYE_TRANSITION_TIME{500};
 
-  static constexpr float ARM_ANGLE{-30};
-  static constexpr float MIN_DISTANCE_CM{35};
-  static constexpr float MAX_DISTANCE_CM{100};
+  static constexpr float ARM_ANGLE{-50};
+  static constexpr float MIN_DISTANCE_CM{15};
+  static constexpr float MAX_DISTANCE_CM{150};
+
+  //////////////////////////////////////////////////////////////////////
+  // Control
+  //////////////////////////////////////////////////////////////////////
+  static constexpr float MAX_ANGLE_CHANGE{5};
+  PidController::Parameters pidParams{.Kp = 1,
+                                      .Kd = 0,
+                                      .Ki = 0,
+                                      .timestepMs = 50,
+                                      .maxControlSignal = MAX_ANGLE_CHANGE,
+                                      .minControlSignal = -MAX_ANGLE_CHANGE};
+
+  PidController pidController;
 
   //////////////////////////////////////////////////////////////////////
   // States
