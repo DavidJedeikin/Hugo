@@ -14,7 +14,7 @@ class DanceState : public IState
  private:
   float objectDistance{0};
   Hardware& hardware;
-  Eyes::Colour currentEyeColour;
+  Eyes::Colour currentEyeColour{Eyes::Colour::light_blue};
 
   //////////////////////////////////////////////////////////////////////
   // Distance Params
@@ -44,6 +44,7 @@ class DanceState : public IState
 
    private:
     DanceState& parent;
+    Eyes::Colour eyeColour{Eyes::Colour::green};
 
   } tooCloseState;
 
@@ -57,6 +58,8 @@ class DanceState : public IState
 
    private:
     DanceState& parent;
+    Eyes::Colour eyeColour{Eyes::Colour::red};
+
   } withinRangeState;
 
   class OutOfRangeState : public IState
@@ -69,5 +72,7 @@ class DanceState : public IState
 
    private:
     DanceState& parent;
+    Eyes::Colour eyeColour{Eyes::Colour::light_blue};
+
   } outOfRangeState;
 };

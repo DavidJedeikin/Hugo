@@ -79,8 +79,11 @@ DanceState::TooCloseState::TooCloseState(DanceState& parent) : parent(parent)
 
 void DanceState::TooCloseState::enter()
 {
-  this->parent.currentState = this;
   LOG_INFO("Entering %s", this->name());
+  this->parent.currentState = this;
+  this->parent.hardware.eyes.crossFade(
+      this->parent.currentEyeColour, this->eyeColour, 1000);
+  this->parent.currentEyeColour = this->eyeColour;
 }
 
 void DanceState::TooCloseState::runOnce()
@@ -104,8 +107,11 @@ DanceState::WithinRangeState::WithinRangeState(DanceState& parent)
 
 void DanceState::WithinRangeState::enter()
 {
-  this->parent.currentState = this;
   LOG_INFO("Entering %s", this->name());
+  this->parent.currentState = this;
+  this->parent.hardware.eyes.crossFade(
+      this->parent.currentEyeColour, this->eyeColour, 1000);
+  this->parent.currentEyeColour = this->eyeColour;
 }
 
 void DanceState::WithinRangeState::runOnce()
@@ -129,8 +135,11 @@ DanceState::OutOfRangeState::OutOfRangeState(DanceState& parent)
 
 void DanceState::OutOfRangeState::enter()
 {
-  this->parent.currentState = this;
   LOG_INFO("Entering %s", this->name());
+  this->parent.currentState = this;
+  this->parent.hardware.eyes.crossFade(
+      this->parent.currentEyeColour, this->eyeColour, 1000);
+  this->parent.currentEyeColour = this->eyeColour;
 }
 
 void DanceState::OutOfRangeState::runOnce()
