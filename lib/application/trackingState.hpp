@@ -22,18 +22,22 @@ class TrackingState : public IState
   static constexpr float MIN_DISTANCE_CM{15};
   static constexpr float MAX_DISTANCE_CM{150};
 
+  void setWaistAngle(int angle);
+
   //////////////////////////////////////////////////////////////////////
   // Control
   //////////////////////////////////////////////////////////////////////
-  static constexpr float MAX_ANGLE_CHANGE{5};
-  PidController::Parameters pidParams{.Kp = 1,
-                                      .Kd = 0,
+
+  static constexpr float MAX_ANGLE_CHANGE{10};
+  PidController::Parameters pidParams{.Kp = 1.0,
+                                      .Kd = 0.0,
                                       .Ki = 0,
                                       .timestepMs = 50,
                                       .maxControlSignal = MAX_ANGLE_CHANGE,
                                       .minControlSignal = -MAX_ANGLE_CHANGE};
 
   PidController pidController;
+  Joints::Limits waistLimits;
 
   //////////////////////////////////////////////////////////////////////
   // States
@@ -75,8 +79,6 @@ class TrackingState : public IState
     WithinRangeState(TrackingState& parent);
     void enter() override;
     void runOnce() override;
-
-   private:
   } withinRangeState;
 
   class OutOfRangeState : public State

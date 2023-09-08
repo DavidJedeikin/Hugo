@@ -3,8 +3,9 @@
 #include "log.hpp"
 
 TrackingState::TrackingState(Hardware& hardware)
-    : hardware(hardware), pidController(this->pidParams), tooCloseState(*this),
-      withinRangeState(*this), outOfRangeState(*this)
+    : hardware(hardware), pidController(this->pidParams),
+      waistLimits(this->hardware.joints.getLimits(Joints::Name::waist)),
+      tooCloseState(*this), withinRangeState(*this), outOfRangeState(*this)
 {
   this->outOfRangeState.enter();
 }
@@ -14,6 +15,7 @@ void TrackingState::enter()
   LOG_INFO("Entering the %s", this->name());
   this->hardware.eyes.setColour(Eyes::Colour::green);
   BodyMotion::setArms(this->hardware.joints, ARM_ANGLE);
+  this->setWaistAngle(0);
 }
 
 void TrackingState::runOnce()
@@ -37,6 +39,23 @@ void TrackingState::runOnce()
 char const* TrackingState::name()
 {
   return "TrackingState";
+}
+
+void TrackingState::setWaistAngle(int angle)
+{
+  if (angle < this->waistLimits.minAngle || angle > this->waistLimits.maxAngle)
+  {
+    LOG_WARN("Attempted to set a waist angle: %d out of bounds: [%d, %d] - "
+             "clamping at: %d",
+             angle,
+             this->waistLimits.minAngle,
+             this->waistLimits.maxAngle,
+             angle < this->waistLimits.minAngle ? this->waistLimits.minAngle
+                                                : this->waistLimits.maxAngle);
+    this->waistAngle = std::clamp(
+        angle, this->waistLimits.minAngle, this->waistLimits.maxAngle);
+  }
+  this->hardware.joints.setAngle(Joints::Name::waist, this->waistAngle);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -126,30 +145,25 @@ void TrackingState::WithinRangeState::enter()
 
 void TrackingState::WithinRangeState::runOnce()
 {
-  // LOG_INFO("Running once %s::%s", this->parent.name(), this->name());
 
   SonarArray::Distance distance =
       this->parent.hardware.sonarArray.getDistance();
-  float difference = distance.left - distance.right;
-  if (std::fabs(difference) > 10)
+
+  float difference = distance.right - distance.left;
+
+  int controlSignal = static_cast<int>(
+      this->parent.pidController.getControlSignal(difference, 0));
+  if (std::fabs(difference) > 5)
   {
-    if (difference < 0.0F)
-    {
-      this->parent.waistAngle -= 5;
-    }
-    else
-    {
-      this->parent.waistAngle += 5;
-    }
+    this->parent.waistAngle += controlSignal;
   }
-  LOG_INFO("%s", distance.toString());
-  LOG_INFO("Difference: %s, Waist Angle: %d",
-           difference < 0 ? "Negative" : "Positive",
+
+  this->parent.setWaistAngle(this->parent.waistAngle);
+
+  LOG_INFO("Difference: %.2f, ControlSignal: %d, WaistAngle: %d",
+           difference,
+           controlSignal,
            this->parent.waistAngle);
-
-  this->parent.hardware.joints.setAngle(Joints::Name::waist,
-                                        this->parent.waistAngle);
-
   delay(this->parent.pidParams.timestepMs);
 }
 
