@@ -3,8 +3,10 @@
 #include "log.hpp"
 
 DanceState::DanceState(Hardware& hardware)
-    : hardware(hardware), distanceToDanceSpeedMap(distanceToDanceSpeedParams)
+    : hardware(hardware), distanceToDanceSpeedMap(distanceToDanceSpeedParams),
+      tooCloseState(*this), withinRangeState(*this), outOfRangeState(*this)
 {
+  this->outOfRangeState.enter();
 }
 
 void DanceState::enter()
@@ -23,59 +25,24 @@ void DanceState::enter()
 
 void DanceState::runOnce()
 {
-  this->updateCurrentObjectState();
-  LOG_INFO("%s", this->currentObjectState.toString());
+  auto desiredState = this->getDesiredState();
+  LOG_INFO("Distance: %.2f, Min: %.2f, Max: %.2f",
+           this->objectDistance,
+           MIN_DISTANCE_CM,
+           MAX_DISTANCE_CM);
 
-  switch (this->currentObjectState.detectionState)
+  if (desiredState == nullptr)
   {
-    case DetectionState::detected: {
-      this->inSafeMode = false;
-      this->hardware.eyes.crossFade(
-          this->currentEyeColour, Eyes::Colour::red, 1000);
-      this->currentEyeColour = Eyes::Colour::red;
-      break;
-    }
-    case DetectionState::still_detected: {
-      if (this->currentObjectState.distance < MIN_DISTANCE_CM)
-      {
-        if (this->inSafeMode)
-        {
-          return;
-        }
-        this->inSafeMode = true;
-        this->hardware.eyes.crossFade(
-            this->currentEyeColour, Eyes::Colour::off, 500);
-        this->currentEyeColour = Eyes::Colour::off;
-        BodyMotion::moveArms(this->hardware.joints, 0, -30, 50);
-        // delay(200);
-        // BodyMotion::moveArms(this->hardware.joints, -30, -15, 50);
-        return;
-      }
-      else
-      {
-        this->inSafeMode = false;
-        this->hardware.eyes.setColour(Eyes::Colour::red);
-        this->currentEyeColour = Eyes::Colour::red;
-      }
-      int sweepSpeedMs =
-          static_cast<int>(this->distanceToDanceSpeedMap.getOutput(
-              this->currentObjectState.distance));
-      BodyMotion::minFullSweep(this->hardware.joints, sweepSpeedMs, -15);
-      break;
-    }
-    case DetectionState::gone: {
-      this->inSafeMode = false;
-      this->hardware.eyes.crossFade(
-          this->currentEyeColour, Eyes::Colour::light_blue, 1000);
-      this->currentEyeColour = Eyes::Colour::light_blue;
-      break;
-    }
-    case DetectionState::still_gone: {
-      this->inSafeMode = false;
-      this->hardware.eyes.setColour(Eyes::Colour::light_blue);
-      this->currentEyeColour = Eyes::Colour::light_blue;
-      break;
-    }
+    LOG_WARN("%s", "Desired state is a nullptr");
+    return;
+  }
+  if (this->currentState != desiredState)
+  {
+    desiredState->enter();
+  }
+  else
+  {
+    this->currentState->runOnce();
   }
 }
 
@@ -84,58 +51,94 @@ char const* DanceState::name()
   return "DanceState";
 }
 
-std::string DanceState::detectionStateToString(DetectionState state)
+//////////////////////////////////////////////////////////////////////
+// Desired State Selector
+//////////////////////////////////////////////////////////////////////
+
+IState* DanceState::getDesiredState()
 {
-  switch (state)
+  this->objectDistance = this->hardware.sonarArray.getDistance().min;
+  if (this->objectDistance < MIN_DISTANCE_CM)
   {
-    case DetectionState::detected:
-      return "DETECTED";
-    case DetectionState::still_detected:
-      return "STILL_DETECTED";
-    case DetectionState::gone:
-      return "GONE";
-    case DetectionState::still_gone:
-      return "STILL_GONE";
+    return &this->tooCloseState;
   }
+  if (this->objectDistance > MAX_DISTANCE_CM)
+  {
+    return &this->outOfRangeState;
+  }
+  return &this->withinRangeState;
 }
 
-std::string DanceState::ObjectState::toString()
+//////////////////////////////////////////////////////////////////////
+// TooCloseState
+//////////////////////////////////////////////////////////////////////
+
+DanceState::TooCloseState::TooCloseState(DanceState& parent) : parent(parent)
 {
-  return format("State: %s, Distance: %.2f",
-                DanceState::detectionStateToString(this->detectionState),
-                this->distance);
 }
 
-void DanceState::updateCurrentObjectState()
+void DanceState::TooCloseState::enter()
 {
-  float distance = this->hardware.sonarArray.getDistance().min;
-  this->currentObjectState.distance = distance;
+  this->parent.currentState = this;
+  LOG_INFO("Entering %s", this->name());
+}
 
-  bool objectInView = distance < DETECTION_DISTANCE_CM;
+void DanceState::TooCloseState::runOnce()
+{
+  LOG_INFO("Running %s Once", this->name());
+}
 
-  auto detectionState = this->currentObjectState.detectionState;
+char const* DanceState::TooCloseState::name()
+{
+  return "TooCloseState";
+}
 
-  if (detectionState == DetectionState::detected ||
-      detectionState == DetectionState::still_detected)
-  {
-    if (objectInView)
-    {
-      this->currentObjectState.detectionState = DetectionState::still_detected;
-    }
-    else
-    {
-      this->currentObjectState.detectionState = DetectionState::gone;
-    }
-    return;
-  }
+//////////////////////////////////////////////////////////////////////
+// WithinRangeState
+//////////////////////////////////////////////////////////////////////
 
-  // Getting here means it's either gone or still_gone
-  if (!objectInView)
-  {
-    this->currentObjectState.detectionState = DetectionState::still_gone;
-  }
-  else
-  {
-    this->currentObjectState.detectionState = DetectionState::detected;
-  }
+DanceState::WithinRangeState::WithinRangeState(DanceState& parent)
+    : parent(parent)
+{
+}
+
+void DanceState::WithinRangeState::enter()
+{
+  this->parent.currentState = this;
+  LOG_INFO("Entering %s", this->name());
+}
+
+void DanceState::WithinRangeState::runOnce()
+{
+  LOG_INFO("Running %s Once", this->name());
+}
+
+char const* DanceState::WithinRangeState::name()
+{
+  return "WithinRangeState";
+}
+
+//////////////////////////////////////////////////////////////////////
+// OutOfRangeState
+//////////////////////////////////////////////////////////////////////
+
+DanceState::OutOfRangeState::OutOfRangeState(DanceState& parent)
+    : parent(parent)
+{
+}
+
+void DanceState::OutOfRangeState::enter()
+{
+  this->parent.currentState = this;
+  LOG_INFO("Entering %s", this->name());
+}
+
+void DanceState::OutOfRangeState::runOnce()
+{
+  LOG_INFO("Running %s Once", this->name());
+}
+
+char const* DanceState::OutOfRangeState::name()
+{
+  return "OutOfRangeState";
 }

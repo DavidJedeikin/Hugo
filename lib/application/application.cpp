@@ -24,6 +24,12 @@ void Application::run()
   while (true)
   {
     auto desiredState = this->getDesiredState();
+    if (desiredState == nullptr)
+    {
+      LOG_WARN("%s", "Desired state is a nullptr");
+      return;
+    }
+
     if (this->currentState != desiredState)
     {
       this->currentState = desiredState;

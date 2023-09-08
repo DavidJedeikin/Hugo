@@ -12,39 +12,62 @@ class DanceState : public IState
   char const* name() override;
 
  private:
-  bool inSafeMode{false};
-
-  enum class DetectionState
-  {
-    detected,
-    still_detected,
-    gone,
-    still_gone
-  };
-
-  static std::string detectionStateToString(DetectionState state);
-
-  struct ObjectState
-  {
-    float distance;
-    DetectionState detectionState;
-    std::string toString();
-  };
-
-  Eyes::Colour currentEyeColour;
-  ObjectState currentObjectState;
-
+  float objectDistance{0};
   Hardware& hardware;
+  Eyes::Colour currentEyeColour;
 
-  static constexpr float MIN_DISTANCE_CM{50};
-  static constexpr float DETECTION_DISTANCE_CM{130};
-
+  //////////////////////////////////////////////////////////////////////
+  // Distance Params
+  //////////////////////////////////////////////////////////////////////
+  static constexpr float MIN_DISTANCE_CM{20};
+  static constexpr float MAX_DISTANCE_CM{50};
   LinearMap::Params distanceToDanceSpeedParams{.inputMin = MIN_DISTANCE_CM,
-                                               .inputMax =
-                                                   DETECTION_DISTANCE_CM,
+                                               .inputMax = MAX_DISTANCE_CM,
                                                .outputMin = 1500,
                                                .outputMax = 3500};
   LinearMap distanceToDanceSpeedMap;
 
-  void updateCurrentObjectState();
+  //////////////////////////////////////////////////////////////////////
+  // States
+  //////////////////////////////////////////////////////////////////////
+  IState* currentState{nullptr};
+
+  IState* getDesiredState();
+
+  class TooCloseState : public IState
+  {
+   public:
+    TooCloseState(DanceState& parent);
+    void enter() override;
+    void runOnce() override;
+    char const* name() override;
+
+   private:
+    DanceState& parent;
+
+  } tooCloseState;
+
+  class WithinRangeState : public IState
+  {
+   public:
+    WithinRangeState(DanceState& parent);
+    void enter() override;
+    void runOnce() override;
+    char const* name() override;
+
+   private:
+    DanceState& parent;
+  } withinRangeState;
+
+  class OutOfRangeState : public IState
+  {
+   public:
+    OutOfRangeState(DanceState& parent);
+    void enter() override;
+    void runOnce() override;
+    char const* name() override;
+
+   private:
+    DanceState& parent;
+  } outOfRangeState;
 };
