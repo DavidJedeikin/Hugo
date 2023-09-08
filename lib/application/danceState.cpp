@@ -128,6 +128,13 @@ DanceState::WithinRangeState::WithinRangeState(DanceState& parent)
 void DanceState::WithinRangeState::enter()
 {
   State::enter();
+  for (int i = 0; i < 3; i++)
+  {
+    this->parent.hardware.eyes.crossFade(
+        Eyes::Colour::blue, Eyes::Colour::red, 100);
+    this->parent.hardware.eyes.crossFade(
+        Eyes::Colour::red, Eyes::Colour::red, 100);
+  }
 }
 
 void DanceState::WithinRangeState::runOnce()
