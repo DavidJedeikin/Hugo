@@ -65,4 +65,10 @@ void moveArms(Joints& joints, int start, int end, int milliSeconds)
     }
   }
 }
+
+void setArms(Joints& joints, int position)
+{
+  joints.setAngle(Joints::Name::left_shoulder, position);
+  joints.setAngle(Joints::Name::right_shoulder, position);
+}
 } // namespace BodyMotion

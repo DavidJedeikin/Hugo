@@ -12,21 +12,27 @@ class DanceState : public IState
   char const* name() override;
 
  private:
-  float objectDistance{0};
   Hardware& hardware;
+  float objectDistance{0};
   Eyes::Colour currentEyeColour{Eyes::Colour::light_blue};
   static constexpr uint32_t EYE_TRANSITION_TIME{500};
 
   //////////////////////////////////////////////////////////////////////
+  // Motion Params
+  //////////////////////////////////////////////////////////////////////
+  float armMotionOffset{-15};
+
+  //////////////////////////////////////////////////////////////////////
   // Distance Params
   //////////////////////////////////////////////////////////////////////
-  static constexpr float MIN_DISTANCE_CM{20};
-  static constexpr float MAX_DISTANCE_CM{50};
-  LinearMap::Params distanceToDanceSpeedParams{.inputMin = MIN_DISTANCE_CM,
-                                               .inputMax = MAX_DISTANCE_CM,
-                                               .outputMin = 1500,
-                                               .outputMax = 3500};
-  LinearMap distanceToDanceSpeedMap;
+  static constexpr float MIN_DISTANCE_CM{40};
+  static constexpr float MAX_DISTANCE_CM{100};
+  static constexpr LinearMap::Params distanceToSpeedParams{
+      .inputMin = MIN_DISTANCE_CM,
+      .inputMax = MAX_DISTANCE_CM,
+      .outputMin = 1000,
+      .outputMax = 3500};
+  LinearMap distanceToSpeed;
 
   //////////////////////////////////////////////////////////////////////
   // States
@@ -45,7 +51,7 @@ class DanceState : public IState
     void enter() override;
     char const* name() override;
 
-   private:
+   protected:
     DanceState& parent;
     std::string stateName;
     Eyes::Colour eyeColour;
@@ -67,6 +73,10 @@ class DanceState : public IState
     WithinRangeState(DanceState& parent);
     void enter() override;
     void runOnce() override;
+
+   private:
+    int danceSpeed{
+        static_cast<int>(DanceState::distanceToSpeedParams.outputMax)};
   } withinRangeState;
 
   class OutOfRangeState : public State

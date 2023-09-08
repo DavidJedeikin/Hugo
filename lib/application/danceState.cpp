@@ -3,7 +3,7 @@
 #include "log.hpp"
 
 DanceState::DanceState(Hardware& hardware)
-    : hardware(hardware), distanceToDanceSpeedMap(distanceToDanceSpeedParams),
+    : hardware(hardware), distanceToSpeed(distanceToSpeedParams),
       tooCloseState(*this), withinRangeState(*this), outOfRangeState(*this)
 {
   this->outOfRangeState.enter();
@@ -101,12 +101,13 @@ char const* DanceState::State::name()
 //////////////////////////////////////////////////////////////////////
 
 DanceState::TooCloseState::TooCloseState(DanceState& parent)
-    : State(parent, "TooCloseState", Eyes::Colour::green, EYE_TRANSITION_TIME)
+    : State(parent, "TooCloseState", Eyes::Colour::off, EYE_TRANSITION_TIME)
 {
 }
 
 void DanceState::TooCloseState::enter()
 {
+  BodyMotion::setArms(this->parent.hardware.joints, -30);
   State::enter();
 }
 
@@ -132,6 +133,12 @@ void DanceState::WithinRangeState::enter()
 void DanceState::WithinRangeState::runOnce()
 {
   LOG_INFO("Running %s Once", this->name());
+  this->danceSpeed =
+      this->parent.distanceToSpeed.getOutput(this->parent.objectDistance);
+  LOG_INFO("Dance speed: %d", this->danceSpeed);
+  BodyMotion::minFullSweep(this->parent.hardware.joints,
+                           this->danceSpeed,
+                           this->parent.armMotionOffset);
 }
 
 //////////////////////////////////////////////////////////////////////
