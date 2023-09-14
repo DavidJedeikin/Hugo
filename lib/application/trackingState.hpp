@@ -20,7 +20,7 @@ class TrackingState : public IState
 
   static constexpr float ARM_ANGLE{-50};
   static constexpr float MIN_DISTANCE_CM{15};
-  static constexpr float MAX_DISTANCE_CM{150};
+  static constexpr float MAX_DISTANCE_CM{85};
 
   void setWaistAngle(int angle);
 
@@ -29,7 +29,7 @@ class TrackingState : public IState
   //////////////////////////////////////////////////////////////////////
 
   static constexpr float MAX_ANGLE_CHANGE{10};
-  PidController::Parameters pidParams{.Kp = 1.0,
+  PidController::Parameters pidParams{.Kp = 1.5,
                                       .Kd = 0.0,
                                       .Ki = 0,
                                       .timestepMs = 50,

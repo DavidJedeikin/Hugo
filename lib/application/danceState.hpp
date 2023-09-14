@@ -25,8 +25,8 @@ class DanceState : public IState
   //////////////////////////////////////////////////////////////////////
   // Distance Params
   //////////////////////////////////////////////////////////////////////
-  static constexpr float MIN_DISTANCE_CM{35};
-  static constexpr float MAX_DISTANCE_CM{100};
+  static constexpr float MIN_DISTANCE_CM{25};
+  static constexpr float MAX_DISTANCE_CM{75};
   static constexpr LinearMap::Params distanceToSpeedParams{
       .inputMin = MIN_DISTANCE_CM,
       .inputMax = MAX_DISTANCE_CM,

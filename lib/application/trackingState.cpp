@@ -160,10 +160,14 @@ void TrackingState::WithinRangeState::runOnce()
 
   this->parent.setWaistAngle(this->parent.waistAngle);
 
-  LOG_INFO("Difference: %.2f, ControlSignal: %d, WaistAngle: %d",
-           difference,
-           controlSignal,
-           this->parent.waistAngle);
+  // LOG_INFO("Difference: %.2f, ControlSignal: %d, WaistAngle: %d",
+  //          difference,
+  //          controlSignal,
+  //          this->parent.waistAngle);
+  LOG_INFO("Left: %.2f, Right: %.2f, Difference: %.2f",
+           distance.left,
+           distance.right,
+           difference);
   delay(this->parent.pidParams.timestepMs);
 }
 
