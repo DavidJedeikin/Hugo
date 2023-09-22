@@ -42,5 +42,6 @@
     "cinttypes": "cpp",
     "typeinfo": "cpp"
   },
-  "C_Cpp.errorSquiggles": "disabled"
+  "cmake.configureOnOpen": false,
+  "C_Cpp.intelliSenseEngine": "disabled"
 }

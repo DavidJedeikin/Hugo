@@ -25,7 +25,7 @@ void DanceState::enter()
 
 void DanceState::runOnce()
 {
-  auto desiredState = this->getDesiredState();
+  auto* desiredState = this->getDesiredState();
   LOG_INFO("Distance: %.2f, Min: %.2f, Max: %.2f",
            this->objectDistance,
            MIN_DISTANCE_CM,
